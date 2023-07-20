@@ -1,0 +1,416 @@
+# This was my final project for CSC500 Principles of Programming at Colorado State University - Global Campus, completed in Spring of 2022. The purpose of this program is to allow the user to create and manage
+# a soccer team's roster.
+
+oneMoment()
+    Menu.printMenu()
+    menu_option = str.capitalize(input('Enter an option from the menu above: '))
+  
+  elif 'D' in menu_option:
+    deletePlayer()
+    print()
+    oneMoment()
+    Menu.printMenu()
+    menu_option = str.capitalize(input('Enter an option from the menu above: '))
+  
+  elif 'C' in menu_option:
+    changePlayer()
+    print()
+    oneMoment()
+    Menu.printMenu()
+    menu_option = str.capitalize(input('Enter an option from the menu above: '))
+  
+  elif 'P' in menu_option:
+    printRoster()
+    oneMoment()
+    Menu.printMenu()
+    menu_option = str.capitalize(input('Enter an option from the menu above: '))
+  
+  elif 'R' in menu_option:
+    pr_ratings_above()
+    print()
+    oneMoment()
+    Menu.printMenu()
+    menu_option = str.capitalize(input('Enter an option from the menu above: '))
+  
+else:
+  print('''Sounds like you're all set for now. I'll be here when you need more help with the roster!''')
+  quit()import random
+import time
+import re
+
+#Variables
+num_players = 0
+menu_option = None
+num = 0
+il = 1
+
+# LISTS & DICTIONARIES
+jerseyNumbers = list()
+playerRatings = list()
+playerWeights = list()
+ordinalsList = ['1st', str('2nd'), str('3rd'), str('4th'), str('5th'), str('6th'), str('7th'), str('8th'), str('9th'), str('10th'), str('11th'), str('12th'), str('13th'), str('14th'), str('15th')]
+playerInfo = {
+}
+
+# UX COPY
+class UXCopy:
+  def __init__(self, errorPhrase, csPhrase, conCon, helpy, tryAgain, askInput):
+    self.errorPhrase = errorPhrase
+    self.csPhrase = csPhrase
+    self.conCon = conCon
+    self.helpy = helpy
+    self.tryAgain = tryAgain
+    self.askInput = askInput
+  
+  def askInput():
+    inputPlease = ['May I have the', 'What\'s the', 'Can you tell me the']
+    print(random.choice(inputPlease), end = ' ')
+  def errorPhrase():
+    errorConjunctions = ['Uh oh—', 'Hmm—', 'That\'s odd—', 'Oops—', 'Oh no—']
+    print(random.choice(errorConjunctions), end = '')
+  def csPhrase():
+    customerServiceConjunctions = ['Great! ', 'Thanks! ', 'Got it! ', 'Okay—', 'Sounds good! ', 'Awesome! ']
+    print(random.choice(customerServiceConjunctions), end = '')
+  def conCon():
+    conversationalContinuity = ['Now,', 'Next,']
+    print(random.choice(conversationalContinuity), end = ' ')
+  def helpy():
+    helpyMcHelperson = ['I\'ll jot all of that down.', 'I\'ll remember that.', 'Consider that written in stone.', 'I hope there\'s a quiz later!']
+    print(random.choice(helpyMcHelperson))
+  def tryAgain():
+    tryAgain_msg = ['try that again.', 'give it another shot.', 'try again.']
+    print(random.choice(tryAgain_msg), end = ' ')
+
+# CUSTOM FUNCTIONS
+class CustomFunctions: #background and convenience functions
+  def __init__(self, cleanNumbers, inputPhrase):
+      self.cleanNumbers = cleanNumbers
+      self.inputPhrase = inputPhrase 
+    
+  def cleanNumbers(x):
+      x = re.sub('[^0-9]', '', x) #Strip any characters that aren't 0-9
+      #print(x)
+      try: 
+        x = int(x) #convert cleaned string to integer
+        return x
+        if x == 0:
+          print()
+          print('     ', end = '')
+          UXCopy.errorPhrase
+          print(end = '')
+          print('''Zero isn't a number that will work for this.''', '\n')
+      except ValueError: #let the user know if their input doesn't contain a usable number
+        print()
+        print('     ',)
+        UXCopy.errorPhrase 
+        print('''That's not a valid number. Let's try a different one.''', '\n')
+        x = 0
+        return x
+
+  def inputPhrase(): #Simulates conversational phrasing when prompting user for input
+      print('     ', end ='') 
+      UXCopy.csPhrase() 
+      UXCopy.askInput()
+
+# MENU FUNCTIONS
+class Menu:
+  def __init__(self, printLineBreak, printMenu): 
+    self.printLineBreak = printLineBreak
+    self.printMenu = printMenu
+    
+  def printLineBreak(x):
+    for x in range(0, x):
+      print('\n')
+  
+  def printMenu():
+    Menu.printLineBreak(3)
+    print('—————————————————————MENU ————————————————————')
+    Menu.printLineBreak(1)
+    print('* A - Add a player                           *', '\n')
+    print('* D - Delete a player                        *', '\n')
+    print('* C - Change a rating                        *', '\n')
+    print('* P - Print the full roster                  *', '\n')
+    print('* R - Print players above a specified rating *', '\n')
+    print('* Q - Quit                                   *', '\n', '\n')
+
+# MAIN INPUT FUNCTIONS
+def addPlayer():   
+  print()
+  print('     ', end = '')
+  UXCopy.askInput()
+  global jersey_num
+  jersey_num = input('''player's jersey number? ''')
+  CustomFunctions.cleanNumbers(jersey_num) 
+  jersey_num = int(jersey_num)
+    #print(playerInfo) #debugging
+  if 0 > jersey_num > 99:
+    print()
+    UXCopy.errorPhrase()
+    print('''The jersey number should be between 1 and 99. Let's try a different number.''')    
+  elif jersey_num in jerseyNumbers: 
+    print('     ') 
+    UXCopy.errorPhrase() 
+    print('''That jersey number is already in the roster. Do you want to change it?''', end = ' ')
+    change_entry = str.capitalize(input())
+    
+    if 'Y' in change_entry:
+      UXCopy.errorPhrase() 
+      print('That feature is currently in development.')
+    else: 
+      Menu.printMenu()
+  else:
+    jerseyNumbers.append(jersey_num) #add to jerseyNumbers list
+    playerInfo['player_{}'.format(jersey_num)] = jersey_num
+
+def playerWeight(jersey_num):
+    print()
+    print('     ', end = '')
+    UXCopy.csPhrase()
+    UXCopy.askInput()
+    enterWeight = input('''the weight for player {} in pounds? '''.format(jersey_num))
+    CustomFunctions.cleanNumbers(enterWeight) #input sanitation
+    enterWeight = int(enterWeight)
+    if 50 < enterWeight < 400:
+      playerWeights.append(enterWeight) #add the player weight to the list
+    elif 50 > enterWeight > 400: #if the weight entered is zero, out of range, or a negative number
+        UXCopy.errorPhrase 
+        print('''That seems like a typo. Let's try a weight in the 50-400 pound range.''')
+    else:
+      playerWeights.append(enterWeight)
+      playerInfo['player_{}_weight'.format(jersey_num)] = enterWeight      
+          
+def playerRating(jersey_num):
+  print()
+  print('     ', end = '')
+  UXCopy.csPhrase()
+  UXCopy.askInput()
+  enterRating = input('''the rating for player {}? '''.format(jersey_num))
+  CustomFunctions.cleanNumbers(enterRating)
+  enterRating = int(enterRating)
+  if 0 < enterRating < 10:
+    playerRatings.append(enterRating)
+    playerInfo['player_{}_rating'.format(jersey_num)] = enterRating
+  else:
+    UXCopy.errorPhrase 
+    print('''That seems like a typo. Try a rating between 1 and 9.''')  
+
+def deletePlayer():        
+  if 'D' in menu_option:
+    print('\n', '    ')
+    #print(jerseyNumbers) #debugging
+    UXCopy.askInput()
+    global jersey_num
+    jersey_num = input('''player's jersey number? ''')
+    CustomFunctions.cleanNumbers(jersey_num)
+    del playerInfo['player_{}'.format(jersey_num)]
+    del playerInfo['player_{}_weight'.format(jersey_num)]
+    del playerInfo['player_{}_rating'.format(jersey_num)]
+    #print(playerInfo) #debugging
+    jersey_num = int(jersey_num)
+    jerseyNumbers.remove(jersey_num) #remove the jersey number from the list
+    UXCopy.csPhrase()
+    print('the player with jersey number {} has been removed from the roster.'.format(jersey_num))
+    #print(jerseyNumbers) #debugging
+    oneMoment()
+    Menu.printMenu()
+          
+def changePlayer():
+  if 'C' in menu_option:
+    print('\n', '    ')
+    UXCopy.errorPhrase()
+    print('That feature is still in development.')
+  else: 
+    Menu.printMenu()
+
+def printRoster():
+  jerseyNumbers.sort()
+  i = 1
+  for i in range(1, (len(jerseyNumbers) + 1)):
+    global jersey_num
+    jersey_num = jerseyNumbers[i - 1]
+    weight = playerInfo.get('player_{}_weight'.format(jersey_num))
+    rating = playerInfo.get('player_{}_rating'.format(jersey_num))
+    print(' ——————————————————————————————————————————————')
+    print('|           Team Roster                        |')
+    print(' ——————————————————————————————————————————————')
+    if jersey < 10:
+      print('|                   |            |')
+      print('| Jersey Number: 0', end = '')
+      print(jersey_num, end = ' | ')
+      print('Rating', end = ': ')
+      print(rating, end = ' | ')
+      print ('Weight', end =': ')
+      print(weight, ' |')
+      print('|                   |                            |')
+      print(' ——————————————————————————————————————————————')
+    else: 
+      print('|                   |                          |')
+      print('| Jersey Number', end = ': ')
+      print(jersey, end = ' | ' )
+      print('Rating', end = ': ')
+      print(rating, end = ' | ')
+      print ('Weight', end =': ')
+      print(weight, ' | ')
+      print('|                   |                          |')
+      print(' ——————————————————————————————————————————————')
+    print()
+  
+def pr_ratings_above():
+  if 'R' in menu_option:
+    print()
+    UXCopy.csPhrase 
+    print('''I can help you view information only for players above a certain rating. What would you like the cutoff rating to be?''', '\n')
+    ratings_above = input()
+    CustomFunctions.cleanNumbers(ratings_above)
+    ratings_above = int(ratings_above)
+    playerRatings.sort()
+    print()
+    UXCopy.csPhrase 
+    print('Here you go:')
+    lj = len(jerseyNumbers) + 1
+    i = 1
+    for i in range(1, lj):
+      jersey_num = jerseyNumbers[i - 1]
+      #print(jersey_num)
+      rating = playerInfo.get('player_{}_rating'.format(jersey_num))
+      #print(rating)
+      rating = int(rating)
+      if rating > ratings_above:          
+        print('Jersey number: ', jersey,  ' | ', 'Player rating: ', rating, '\n')
+
+def oneMoment():
+  print()
+  print('''I'll take you back to the main menu now. One moment, please...''')
+  time.sleep(2)
+
+
+# EXECUTION STARTS 
+
+print('''Welcome! I understand you need to build and manage a roster for your soccer team. I'm great at that!''', '\n')
+print('''We'll start with some basic information...''', '\n')
+num_players = input('How many players are on the team right now? ')
+print()
+CustomFunctions.cleanNumbers(num_players)
+num_players = int(num_players)
+
+#Initial input loop
+
+for il in range(1, num_players + 1):
+  print()
+  print('Enter the', ordinalsList[il - 1], end = ' ')
+  jersey_num = input('''player's jersey number: ''')
+  CustomFunctions.cleanNumbers(jersey_num)
+  jersey_num = int(jersey_num)
+  if jersey_num >= 100 or jersey_num <= 0:
+    print()
+    UXCopy.errorPhrase()
+    print('I can only accept jersey numbers between 1 and 99.', end = ' ')
+    UXCopy.tryAgain()
+    print()
+    #continue
+  elif jersey_num in jerseyNumbers: 
+    print()
+    UXCopy.errorPhrase()
+    print('''That's already on the roster.''', end = ' ')
+    UXCopy.tryAgain()
+    print()
+  else: #If neither error condition is triggered
+    jerseyNumbers.append(jersey_num)
+    playerInfo['player_{}'.format(jersey_num)] = jersey_num
+    print()
+    #>RATINGS INNER LOOP
+    print('     ')
+    UXCopy.conCon()
+    print('enter the player rating for jersey number',    jersey_num, end = ': ')
+    player_rating = input()
+    CustomFunctions.cleanNumbers(player_rating)
+    player_rating = int(player_rating)
+    if player_rating >= 10 or player_rating <=0:   
+      print()
+      UXCopy.errorPhrase()
+      print('     Ratings need to be between 1 and 9. ')
+      print()
+      continue
+    elif player_rating in playerRatings: 
+      print()
+      print('     Another player already has that rating.')
+      print()
+      #continue
+    else: #If neither error condition is triggered
+      playerRatings.append(player_rating)
+      playerInfo['player_{}_rating'.format(jersey_num)] = player_rating
+      #print(playerInfo) #debugging
+      print()
+    # WEIGHTS INNER LOOP
+    print('     ')
+    UXCopy.conCon()
+    print('enter the weight for jersey number',    jersey_num, end = ': ')
+    player_weight = input()
+    CustomFunctions.cleanNumbers(player_weight)
+    player_weight = float(player_weight)
+    if player_weight >= 401 or player_weight <=49:   
+      print('     ')
+      UXCopy.errorPhrase()
+      print('I only have enough room to record typical player weights in the range of 50 - 400 pounds. ')
+      print()
+      continue
+    else: 
+      playerWeights.append(player_weight)
+      playerInfo['player_{}_weight'.format(jersey_num)] = player_weight
+      il += 1
+      #print(p) #debugging
+      #print(playerInfo) #debugging    
+    
+print('Player weights:', playerWeights)
+print()
+avg_weight = sum(playerWeights) / num_players
+print('Average weight:', f'{avg_weight:.2f}')
+print()
+print('Maximum weight:', f'{max(playerWeights):.2f}')
+
+print('''Here's your starting roster... ''', '\n')
+time.sleep(2)
+
+#print(playerInfo) #debugging
+jerseyNumbers.sort()
+print(' —————————————————————————————————————————————————')
+print('| Team Roster                                     |')
+print(' —————————————————————————————————————————————————')
+for i in range(1, (len(jerseyNumbers) + 1)):
+    jersey = int(jerseyNumbers[i - 1])
+    weight = playerInfo.get('player_{}_weight'.format(jersey))
+    rating = playerInfo.get('player_{}_rating'.format(jersey))
+    
+    if jersey < 10:
+      print('|                   |                             |')
+      print('| Jersey Number: 0', end = '')
+      print(jersey, end = ' | ')
+      print('Rating', end = ': ')
+      print(rating, end = ', ')
+      print ('Weight', end =': ')
+      print(weight, ' |')
+      print('|                   |                             |')
+      print(' —————————————————————————————————————————————————')
+    else: 
+      print('|                   |                             |')
+      print('| Jersey Number', end = ': ')
+      print(jersey, end = ' | ' )
+      print('Rating', end = ': ')
+      print(rating, end = ', ')
+      print ('Weight', end =': ')
+      print(weight, ' | ')
+      print('|                   |                             |')
+      print(' ——————————————————————————————————————————————')
+    print()
+
+Menu.printMenu()
+menu_option = str.capitalize(input('Enter an option from the menu above: '))
+j = 1
+
+while 'Q' not in menu_option:
+  if 'A' in menu_option:
+    addPlayer()
+    playerWeight(jersey_num)
+    playerRating(jersey_num)
+    UXCopy.csPhrase()
+    UXCopy.helpy()
