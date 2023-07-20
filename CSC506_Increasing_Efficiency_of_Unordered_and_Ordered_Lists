@@ -1,0 +1,35 @@
+# This script  takes a sentence input by the user, converts it to a list of individual words, iterates over each word in the list to get its synonyms from the NLTK’s wordnet module, 
+# and then adds each word’s synonyms to a list named after the word. Next, it prints the synonyms lists. 
+# Because no lists are created for words that have no available synonyms, I also included a try: except: else: loop that prints a message instead of the error encountered when the program finds no list to print.
+
+# Import the Natural Language ToolKit
+from typing import Set, Any
+import nltk
+# nltk.download('wordnet')
+from nltk.corpus import wordnet
+
+class SynWords:
+    def __init__(self):
+        pass
+    def generate_thesaurus(self):
+        i = 0
+        for i in range(len(word_list)):
+            word = word_list[i]
+            print(word)
+            for syn in wordnet.synsets(str(word)):
+                locals()[word] = []
+                for lemm in syn.lemmas():
+                    locals()[word].append(lemm.name())
+                i += 1
+            try:
+                locals()[word] = set(locals()[word])  # Convert the list of synonyms to a set, removing any duplicates
+                print(locals()[word])
+            except:
+                print('The word "', end ='')
+                print(word, end='')
+                print('" has no available synonyms.')
+            else:
+                continue
+source_phrase = input('Please enter a source phrase: ')
+word_list = source_phrase.split()  # Creates a list of words from the user's input
+SynWords.generate_thesaurus(word_list)
