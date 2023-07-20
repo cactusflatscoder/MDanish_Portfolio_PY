@@ -1,0 +1,38 @@
+# The requirements for this program were that it had to calculate a retail sales total. My interpretation was a program that helps shoppers keep a running total to empower them to stick to a budget.
+
+import math
+
+running_total = float(0.00)
+
+print("Hello! I'm here to help you stick to your budget.")
+print()
+print("After you enter each item price, I'll show you a running total")
+print("that includes sales tax.")
+print()
+print("Enter an item price:", end = ' $')
+item_price = float(input())
+tax = item_price *  0.07
+running_total += item_price + tax
+print()
+print("7% sales tax: ", end = ' $')
+print(math.ceil(tax * 100) / 100)
+print("Running total:", end = ' $')
+print(math.ceil(running_total * 100) / 100)
+print()
+cont_check = str(input("Do you want to add another item? (yes/no): "))
+print()
+while 'y' in cont_check:
+    print("Enter an item price:", end = ' $')
+    item_price = float(input())
+    tax = item_price *  0.07
+    running_total += item_price + tax
+    print()
+    print("7% sales tax: ", end = ' $')
+    print(math.ceil(tax * 100) / 100)
+    print("Running total:", end = ' $')
+    print(math.ceil(running_total * 100) / 100)
+    print()
+    cont_check = str(input("Do you want to add another item? (yes/no): "))
+    print()
+print("Okay, it sounds like you're done. Your final total is", end = ' $')
+print(math.ceil(running_total * 100) / 100)
