@@ -1,0 +1,46 @@
+# The requirements for this program were that it had to calculate the average rainfall from user input. 
+
+import random
+
+print('Welcome! I\'m going to help you figure out the average monthly rainfall over a span of at least one year.')
+print()
+num_years = int(input('First, how many years are we talking about? '))
+print()
+print('Okay, thanks!')
+print()
+print('Now, let\'s enter each month\'s rainfall, measured in inches.')
+print()
+print()
+x = num_years
+y = 0
+rainfall = 0
+
+monthsinYear = ['January?', 'February?', 'March?', 'April?', 'May?', 'June?', 'July?', 'August?', 'September?', 'October?', 'November?', 'December?']
+
+conjunctionsList = ['For', 'Now, for', 'Okay, in', 'All right, in']
+
+signoffsList = ['most excellent', 'fantastic', 'super', 'terrific', 'great']
+
+for x in range(num_years):
+  print(random.choice(conjunctionsList), end = ' ')
+  print('year', x + 1, end = ':')
+  print()
+  print()
+  for y in range(0, 12):
+    print('     What was the rainfall for', monthsinYear[y], end = ' ')
+    rainfall += float(input())
+    print()
+    
+else:
+  print()
+  print('Okay, I think that\'s all the information I need.')
+  print()
+  print()
+  total_months = num_years * 12
+  print('The total number of months was', total_months, end = '.')
+  print()
+  print('And the total rainfall you gave me is',  "{:.2f}".format(rainfall), 'inches.')
+  print()
+  print('So, that makes the average rainfall per month', "{:.2f}".format(rainfall / total_months), 'inches.')
+  print()
+  print('Have a', random.choice(signoffsList), 'day!')
