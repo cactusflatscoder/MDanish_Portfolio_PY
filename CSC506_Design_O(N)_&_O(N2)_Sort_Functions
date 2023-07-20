@@ -1,0 +1,53 @@
+#  The requirements for this exercise were that it had to contain implementations of both O(N2) and O(N) sort functions. I chose selection sort as my O(N2) function and radix sort for my O(N) function.
+
+import random
+numbers_list = []
+x = 0
+def radix_sort(numbers_list):
+    i = 0
+    base = 10
+    # Set up 10 sorting buckets
+    print('Beginning radix sort...\n')
+    buckets = [[] for _ in range(base)]
+    # Find the maximum number of digits in any element of the array
+    max_digits = max(len(str(x)) for x in numbers_list)
+    # print(max_digits)
+    # Find the least significant digit in the array
+    for i in range(0, max_digits):
+        for x in numbers_list:
+            digit = (x // base ** i) % base
+            print(digit)
+            buckets[digit].append(x)
+            print('Bucket', digit, ': ', buckets[digit])
+        numbers_list = [x for queue in buckets for x in queue]
+        print(buckets)
+        # print(numbers_list)
+        i = i + 1
+        buckets = [[] for _ in range(10)]
+    print('Total iterations: ', i)
+    print('Radix sort is complete. The final list is', numbers_list)
+    return numbers_list
+def sel_sort(list_name):  # Find the smallest element and move it to the beginning of the array.
+    i = 0
+    list_range = sort_num
+    print('\nBeginning selection sort...\n')
+    while i < sort_num:
+        try:
+            x = min(numbers_list[i:list_range])
+            min_index = numbers_list.index(x)
+            numbers_list[i], numbers_list[min_index] = numbers_list[min_index], numbers_list[i]
+            i = i + 1
+            # print(numbers_list)
+        except:
+            print('')
+        else:
+            if i == list_range:
+                print('\nTotal iterations: ', i)
+                print('\nSelection sort is complete. The final list is', numbers_list)
+# Main program starts here
+sort_num = int(input('How many numbers_list would you like to sort? '))
+# Create a list of random numbers_list between 0 and 100
+numbers_list = [random.randint(0, 100) for val in range(sort_num)]
+print('\nLet\'s start with the following list: ', numbers_list, '\n')
+radix_sort(numbers_list)
+sel_sort(numbers_list)
