@@ -1,0 +1,130 @@
+# This was my final project for the CSC507 Foundations of Operating Systems course at Colorado State University - Global Campus, completed in Spring of 2023. 
+
+import random, timeit, os, concurrent.futures as cf
+
+parts = [[],[],[],[],[],[],[],[],[],[]]
+output_files = []
+
+class Experiment:
+   def __init__(self) -> None:
+       pass       
+
+
+   def control():
+       print('Running control...\n')
+       # Open the files
+       with open('hugefile1.txt', 'r') as file1:
+           with open('hugefile2.txt', 'r') as file2:
+               with open('totalfile.txt', 'a+') as outfile:
+                   # Read the first line of each input file
+                   lf1 = file1.readline()
+                   lf2 = file2.readline()
+                   while lf1 and lf2:  # While there are lines
+                       # Strip the \n from each line, convert it to a number, and add them together
+                       total = int(lf1.strip('\n')) + int(lf2.strip('\n'))
+                       total = str(total)
+                       outfile.write(total + '\n')                                              
+                       # Move on to the next lines in each file
+                       lf1 = file1.readline()
+                       lf2 = file2.readline()
+
+
+   def process_parts(part):  # Processes all parts concurrently as separate threads when called by concurrent.futures
+       print(f'Processing part {part + 1}...')
+       # Pull a set of two file names from the nested list that corresponds to the value of part
+       filename1 = parts[part][0]
+       filename2 = parts[part][1]
+       # Create a temp file for this thread's output and write its name to a list; this is used later to clean up the temp files
+       temp = f'p{part}output.txt'
+       output_files.append(temp)
+       print(f'Reading temp files {filename1} & {filename2}...')
+       print('Now processing...')
+       # Read the part files into memory line by line
+       with open(filename1, 'r') as file1:
+           with open(filename2, 'r') as file2:
+               with open(temp, 'a+') as p:
+                   contents1 = file1.readline()
+                   contents2 = file2.readline()
+                   while contents1 and contents2:
+                   # Strip the \n from each line, convert it to a number, and add them together                   
+                       num1 = str(contents1).strip('\n')
+                       num2 = str(contents2).strip('\n')
+                       total = int(num1) + int(num2)
+                       total = str(total)
+                       # Write the sum to the temp file that corresponds to the value of part
+                       p.write(total + '\n')
+                       # Move on to the next lines in each part file
+                       contents1 = file1.readline()
+                       contents2 = file2.readline()
+
+
+   def split_files():
+       print('Splitting files...')
+       files = ['hugefile1.txt', 'hugefile2.txt']
+       # Divide the size of the first file by 10 to get the chunk size
+       chunk_size = os.path.getsize('hugefile1.txt') // 10
+       # Iterate over the range of 10 chunks
+       for newfile in range(0, 10):
+           # Iterate over each file in files
+           for input in range(0, 2):
+               input_file = f'hugefile{input + 1}.txt'
+               output_file = f'hf{input + 1}part{newfile + 1}.txt'
+               with open(output_file, 'wb') as output:
+                   # Read the chunk_size bytes from the main file
+                   with open(input_file, 'rb') as hf:
+                       chunk = hf.read(chunk_size)
+                       # Write the chunk to the output file and write the file name to a nested list within the parts list
+                       output.write(chunk)
+                       parts[newfile].append(output_file)
+
+# ---------------------------------------------------------------------------------------------------------------------------
+
+# Run the control
+start_time = timeit.default_timer()  # Start the timer
+Experiment.control()
+end_time = timeit.default_timer()  # End the timer
+elapsed = end_time - start_time
+minutes = elapsed // 60
+print(f'Time elapsed for control process was {elapsed} seconds, or {minutes} minutes.\n')
+
+# Run the experiment
+start_time = timeit.default_timer()  # Start the timer
+Experiment.split_files()  # Split main files into temp files
+print('Running experiment...')
+print('Threads processing. Please wait.')
+# Instantiate the thread manager
+executor = cf.ThreadPoolExecutor(max_workers=15)
+# Start threads
+futures = [executor.submit(Experiment.process_parts, i) for i in range(10)]
+# After all threads have been instantiated and started, wait for them to finish
+for future in cf.as_completed(futures):
+   try:
+       result = future.result()
+       print(result)
+   except TypeError:
+       continue
+
+print('All threads have finished processing.\n')
+
+# Concatenate all output files
+with open('totalfile_exp.txt', 'w') as file:
+   for infile in output_files:
+       with open(infile, 'r') as piece:
+           file.write(piece.read())
+   for infile in output_files:
+       os.remove(infile)
+
+end_time = timeit.default_timer()
+elapsed = end_time - start_time
+minutes = elapsed // 60
+
+print(f'Time elapsed for threaded process was {elapsed} seconds, or {minutes} minutes.\n')
+
+# Clean up all temp files
+print('Now cleaning up temp files...\n')
+i = 0
+for i in range(10):
+   os.remove(f'hf1part{i + 1}.txt')
+   os.remove(f'hf2part{i + 1}.txt')
+
+print('Cleanup complete.')
