@@ -1,0 +1,17 @@
+# This script t takes a sample sentence from a text file in the same directory the script is in and expands the data in it by generating 10 alternate phrasings. 
+# It uses the nlpaug library’s SynonymAug method to perform the augmentations. nlpaug can also be used to simulate typos, augment with antonyms and random words, 
+# and perform lists of augmentations in sequence in addition to other forms of text and audio augmentation.
+
+import os
+import sys
+import nlpaug.augmenter.word as naw
+
+with open(os.path.join(sys.path[0], "test_text_file.txt"), "r", encoding='utf-8') as f:  # open the text file from the same directory the script is in
+    df = f.readlines()
+    # print(df)  # This is here for data verification and debugging
+# The next line converts the file input to a string so nlpaug can work with it
+    df = str(df)
+    for i in range (0, 10):
+        aug = naw.SynonymAug(aug_src='wordnet')
+        df_aug = aug.augment(df)
+        print(df_aug)
